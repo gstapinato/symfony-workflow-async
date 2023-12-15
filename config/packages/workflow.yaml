@@ -1,0 +1,47 @@
+framework:
+    workflows:
+        catalog:
+            type: 'state_machine'
+            audit_trail:
+                enabled: true
+            marking_store:
+                type: 'method'
+                property: 'stateAsString'
+            supports:
+                - App\Entity\Catalog
+            initial_marking: !php/enum App\Entity\CatalogState::INITIALIZED->value
+            places:
+                !php/enum App\Entity\CatalogState::INITIALIZED->value: 
+                    metadata:
+                        Type: Sync
+                !php/enum App\Entity\CatalogState::PENDING->value: 
+                    metadata:
+                        Type: Sync
+                !php/enum App\Entity\CatalogState::PROCESSING->value:
+                    metadata:
+                        Type: Async
+                !php/enum App\Entity\CatalogState::FAILED->value: 
+                    metadata:
+                        Type: Sync
+                !php/enum App\Entity\CatalogState::SUCCESS->value: 
+                    metadata:
+                        Type: Sync
+                !php/enum App\Entity\CatalogState::PUBLISHED->value: 
+                    metadata:
+                        Type: Sync
+            transitions:
+                !php/enum App\Entity\CatalogTransition::TO_PENDING->value:
+                    from: !php/enum App\Entity\CatalogState::INITIALIZED->value
+                    to:   !php/enum App\Entity\CatalogState::PENDING->value
+                !php/enum App\Entity\CatalogTransition::TO_PROCESSING->value:
+                    from: !php/enum App\Entity\CatalogState::PENDING->value
+                    to:   !php/enum App\Entity\CatalogState::PROCESSING->value
+                !php/enum App\Entity\CatalogTransition::TO_FAILED->value:
+                    from: !php/enum App\Entity\CatalogState::PROCESSING->value
+                    to:   !php/enum App\Entity\CatalogState::FAILED->value
+                !php/enum App\Entity\CatalogTransition::TO_SUCCESS->value:
+                    from: !php/enum App\Entity\CatalogState::PROCESSING->value
+                    to:   !php/enum App\Entity\CatalogState::SUCCESS->value
+                !php/enum App\Entity\CatalogTransition::TO_PUBLISHED->value:
+                    from: !php/enum App\Entity\CatalogState::SUCCESS->value
+                    to:   !php/enum App\Entity\CatalogState::PUBLISHED->value

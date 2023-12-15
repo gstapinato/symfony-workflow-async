@@ -1,0 +1,17 @@
+#This configuration is only valid on Symfony 5.3+. For previous versions check https://github.com/phpstan/phpstan-symfony
+
+parameters:
+    level: 0  #  you can currently choose from 9 levels (0 is the loosest and 8 is the strictest). 
+    symfony:
+        container_xml_path: var/cache/dev/App_KernelDevDebugContainer.xml
+    scanDirectories:
+        - var/cache/dev/Symfony/Config        
+    paths: #Paths to scans
+        - src
+        - tests
+
+#   Ignore section errors. Add Regex expression for each exception to ignore. 
+#   See https://phpstan.org/user-guide/ignoring-errors#generate-an-ignoreerrors-entry
+#   ignoreErrors:
+#        -
+#            message: '#Access to an undefined property *#'
