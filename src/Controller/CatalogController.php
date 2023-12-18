@@ -2,20 +2,21 @@
 
 namespace App\Controller;
 
-use App\DTO\CatalogDTO;
-use Psr\Log\LoggerInterface;
-
-use App\Service\CatalogServiceInterface;
 use Ramsey\Uuid\Uuid;
+use App\DTO\CatalogDTO;
+
+use Psr\Log\LoggerInterface;
+use OpenApi\Attributes as OA;
+use App\Service\CatalogServiceInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+
+use Symfony\Component\Routing\Requirement\Requirement;
+
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-use OpenApi\Attributes as OA;
-
-use Nelmio\ApiDocBundle\Annotation\Model;
 
 
 #[Route('/api/catalog', name: 'catalog_')]
@@ -51,13 +52,6 @@ class CatalogController extends AbstractController
         );
     }
 
-    #[Route('/start/{id}', name: 'start', methods: ['PUT'])]
-    public function start(string $id): JsonResponse
-    {
-        $this->catalogService->start(Uuid::fromString($id));
-        return $this->json(null);
-    }
-
     /**
      * Publish a catalog.
      */
@@ -78,7 +72,8 @@ class CatalogController extends AbstractController
         description: 'Catalog not found',
         content: new OA\JsonContent(ref: new Model(type: CatalogDTO::class))
     )]
-    #[Route('/publish/{id}', name: 'publish', methods: ['PUT'])]
+    
+    #[Route('/publish/{id}', name: 'publish', methods: ['PUT'], requirements: ['id' => Requirement::UUID_V4])]
     public function publish(string $id): JsonResponse
     {
         $this->catalogService->publish(Uuid::fromString($id));

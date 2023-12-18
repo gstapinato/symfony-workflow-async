@@ -20,7 +20,7 @@ class CatalogControllerTest extends BaseAplicationTest
         $this->assertEquals(preg_match('/[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/', $id), true);
 
         $catalog = $this->entityManager->getRepository(Catalog::class)->find(Uuid::fromString($id));
-        $this->assertEquals($catalog->getState(), CatalogState::PENDING);
+        $this->assertEquals($catalog->getState(), CatalogState::PROCESSING);
 
 
     }

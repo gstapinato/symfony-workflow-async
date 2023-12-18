@@ -4,24 +4,14 @@ namespace App\StateMachine;
 
 use App\Entity\Catalog;
 use App\Entity\CatalogState;
-use App\Repository\CatalogRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-
+use App\Message\CatalogMessage;
 use App\Service\CatalogService;
-use App\Service\MessageService;
 
-use App\Service\QueueEventsEnum;
-use App\Entity\CatalogTransition;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Workflow\Event\EnteredEvent;
-use Symfony\Component\Workflow\Event\TransitionEvent;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Attribute\AsEnteredListener;
-use Symfony\Component\Workflow\Attribute\AsTransitionListener;
-use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
-use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
-use Symfony\Component\Messenger\Event\WorkerMessageRetriedEvent;
-use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 
 class StateMachineListener
@@ -33,6 +23,7 @@ class StateMachineListener
         private readonly LoggerInterface $logger,
         private readonly SerializerInterface $serializer,
         private readonly EntityManagerInterface $entityManager,
+        private readonly MessageBusInterface $messageBusInterface,
 
     ) {
     }
@@ -42,7 +33,8 @@ class StateMachineListener
     {
         /** @var Catalog $catalog */
         $catalog = $event->getSubject();
-        $this->catalogService->importProducts($catalog);
+        $catalogMessage = new CatalogMessage($catalog->getId(), $catalog->getName(), $catalog->getFileName());
+        $this->messageBusInterface->dispatch($catalogMessage);
 
     }
 

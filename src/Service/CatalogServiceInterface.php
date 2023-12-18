@@ -20,12 +20,6 @@ interface CatalogServiceInterface
      */
     public function create(CatalogDTO $catalogDTO): CatalogDTO;
     /**
-     * Change catalog status to processing.
-     * @param string $id
-     * @return void
-     */
-    public function start(UuidInterface $id): void;
-    /**
      * Change catalog status to publish.
      * @param string $id
      * @return void
@@ -33,18 +27,11 @@ interface CatalogServiceInterface
     public function publish(UuidInterface $id): void;
 
     /**
-     * Start batch processing.
-     * @param \App\Entity\Catalog $catalog
-     * @return void
-     */
-    public function importProducts(Catalog $catalog): void;
-
-    /**
      * Change catalog status to success.
      * @param \App\Entity\Catalog $catalog
      * @return void
      */
-    public function successImport(Catalog $catalog): void;
+    public function successImport(UuidInterface $id): void;
 
 
 }
