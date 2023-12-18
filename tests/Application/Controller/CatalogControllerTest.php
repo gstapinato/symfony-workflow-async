@@ -11,9 +11,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class CatalogControllerTest extends BaseAplicationTest
 {
 
-    public function testCatalogAdd(): void
+    public function testCatalogCreate(): void
     {
-        $this->client->jsonRequest('POST', '/api/catalog/add', ["name" => uniqid(), "fileName" => uniqid()]);
+        $this->client->jsonRequest('POST', '/api/catalog/create', ["name" => uniqid(), "fileName" => uniqid()]);
         $this->assertResponseIsSuccessful();
         $id = json_decode($this->client->getResponse()->getContent(), true)["id"];
 
@@ -29,10 +29,10 @@ class CatalogControllerTest extends BaseAplicationTest
     {
         $this->client->disableReboot();
 
-        $this->client->jsonRequest('POST', '/api/catalog/add', ["name" => uniqid(), "fileName" => uniqid()]);
+        $this->client->jsonRequest('POST', '/api/catalog/create', ["name" => uniqid(), "fileName" => uniqid()]);
         $id = Uuid::fromString(json_decode($this->client->getResponse()->getContent(), true)["id"]);
 
-        $this->client->jsonRequest('POST', '/api/catalog/start', ["id" => $id]);
+        $this->client->jsonRequest('PUT', "/api/catalog/start/$id");
         $this->assertResponseIsSuccessful();
 
         $catalog = $this->entityManager->getRepository(Catalog::class)->find($id);
@@ -44,16 +44,18 @@ class CatalogControllerTest extends BaseAplicationTest
     {
         $this->client->disableReboot();
 
-        $this->client->jsonRequest('POST', '/api/catalog/add', ["name" => uniqid(), "fileName" => uniqid()]);
-        $id = Uuid::fromString(json_decode($this->client->getResponse()->getContent(), true)["id"]);
+        $this->client->jsonRequest('POST', '/api/catalog/create', ["name" => uniqid(), "fileName" => uniqid()]);
+        $this->assertResponseIsSuccessful();
+
+        $idString = json_decode($this->client->getResponse()->getContent(), true)["id"];
+        $id = Uuid::fromString($idString);
 
         //Force to change catalog status to sucess. 
         $catalog = $this->entityManager->getRepository(Catalog::class)->find($id);
         $catalog->setState(CatalogState::SUCCESS);
         $this->entityManager->persist($catalog);
         $this->entityManager->flush();
-
-        $this->client->jsonRequest('POST', '/api/catalog/publish', ["id" => $id]);
+        $this->client->jsonRequest('PUT', "/api/catalog/publish/$idString");
         $this->assertResponseIsSuccessful();
 
         $catalog = $this->entityManager->getRepository(Catalog::class)->find($id);

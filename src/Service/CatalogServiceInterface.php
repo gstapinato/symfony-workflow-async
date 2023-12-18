@@ -18,7 +18,7 @@ interface CatalogServiceInterface
      * @param \App\DTO\CatalogDTO $catalogDTO
      * @return \Ramsey\Uuid\UuidInterface
      */
-    public function add(CatalogDTO $catalogDTO): UuidInterface;
+    public function create(CatalogDTO $catalogDTO): CatalogDTO;
     /**
      * Change catalog status to processing.
      * @param string $id

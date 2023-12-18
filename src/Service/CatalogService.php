@@ -24,20 +24,21 @@ final class CatalogService implements CatalogServiceInterface
         private readonly CatalogRepository $catalogRepository,
         private readonly WorkflowInterface $catalogStateMachine,
         private readonly EntityManagerInterface $entityManager,
-
+        
     ) {
     }
 
-    public function add(CatalogDTO $catalogDTO): UuidInterface
+    public function create(CatalogDTO $catalogDTO): CatalogDTO
     {
         $catalog = new Catalog(
-            Uuid::uuid4()->toString(),
+            Uuid::uuid4(),
             $catalogDTO->name,
             $catalogDTO->fileName
         );
 
         $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_PENDING->value);
-        return $catalog->getId();
+
+        return new CatalogDTO($catalog->getId(), $catalog->getFileName(), $catalog->getName());
     }
     public function start(UuidInterface $id): void
     {
@@ -48,17 +49,20 @@ final class CatalogService implements CatalogServiceInterface
 
     public function importProducts(Catalog $catalog): void
     {
-        //TODO: Start import products command here
+        //TODO: Create a Message and add to queue for processing.
+
+        sleep(10);
+        $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_SUCCESS->value);
+
     }
 
     public function successImport(Catalog $catalog): void
     {
-        $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_SUCCESS->value);
     }
 
     public function publish(UuidInterface $id): void
     {
-        $catalog = $this->catalogRepository->find($id);
+        $catalog = $this->catalogRepository->findOrFail($id);
         $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_PUBLISHED->value);
     }
 
