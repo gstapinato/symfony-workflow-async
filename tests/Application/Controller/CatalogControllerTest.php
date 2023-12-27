@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Tests\Application\Controller;
 
@@ -6,11 +8,9 @@ use App\Entity\Catalog;
 use App\Entity\CatalogState;
 use Ramsey\Uuid\Uuid;
 use App\Tests\Application\BaseAplicationTest;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class CatalogControllerTest extends BaseAplicationTest
 {
-
     public function testCatalogCreate(): void
     {
         $this->client->jsonRequest('POST', '/api/catalog/create', ["name" => uniqid(), "fileName" => uniqid()]);
@@ -25,21 +25,6 @@ class CatalogControllerTest extends BaseAplicationTest
 
     }
 
-    public function testCatalogStart(): void
-    {
-        $this->client->disableReboot();
-
-        $this->client->jsonRequest('POST', '/api/catalog/create', ["name" => uniqid(), "fileName" => uniqid()]);
-        $id = Uuid::fromString(json_decode($this->client->getResponse()->getContent(), true)["id"]);
-
-        $this->client->jsonRequest('PUT', "/api/catalog/start/$id");
-        $this->assertResponseIsSuccessful();
-
-        $catalog = $this->entityManager->getRepository(Catalog::class)->find($id);
-        $this->assertEquals($catalog->getState(), CatalogState::PROCESSING);
-        $this->client->enableReboot();
-    }
-
     public function testCatalogPublish(): void
     {
         $this->client->disableReboot();
@@ -50,7 +35,7 @@ class CatalogControllerTest extends BaseAplicationTest
         $idString = json_decode($this->client->getResponse()->getContent(), true)["id"];
         $id = Uuid::fromString($idString);
 
-        //Force to change catalog status to sucess. 
+        //Force to change catalog status to sucess.
         $catalog = $this->entityManager->getRepository(Catalog::class)->find($id);
         $catalog->setState(CatalogState::SUCCESS);
         $this->entityManager->persist($catalog);

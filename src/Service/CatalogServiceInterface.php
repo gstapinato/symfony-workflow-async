@@ -3,35 +3,45 @@
 namespace App\Service;
 
 use App\DTO\CatalogDTO;
-use App\Entity\Catalog;
+use App\Entity\CatalogState;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * Summary of QueueService
- 
+ * Summary of CatalogServiceInterface
  */
 interface CatalogServiceInterface
 {
-
     /**
      * Add a catalog on pending state.
-     * @param \App\DTO\CatalogDTO $catalogDTO
-     * @return \Ramsey\Uuid\UuidInterface
+     * @param CatalogDTO $catalogDTO
+     * @return UuidInterface
      */
     public function create(CatalogDTO $catalogDTO): CatalogDTO;
     /**
      * Change catalog status to publish.
-     * @param string $id
+     * @param UuidInterface $id
      * @return void
      */
-    public function publish(UuidInterface $id): void;
+    public function setCatalogStatusAsPublished(UuidInterface $id): void;
 
     /**
      * Change catalog status to success.
-     * @param \App\Entity\Catalog $catalog
+     * @param UuidInterface $id
      * @return void
      */
-    public function successImport(UuidInterface $id): void;
+    public function setCatalogStatusAsSuccess(UuidInterface $id): void;
 
+    /**
+     * Change catalog status to success.
+     * @param UuidInterface $id
+     * @return void
+     */
+    public function setCatalogStatusAsFailed(UuidInterface $id): void;
 
+    /**
+     * Get catalog status
+     * @param UuidInterface $id
+     * @return CatalogState
+     */
+    public function getCatalogStatus(UuidInterface $id): CatalogState;
 }

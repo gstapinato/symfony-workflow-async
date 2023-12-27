@@ -15,16 +15,15 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 /**
  * Summary of QueueService
- 
+
  */
 final class CatalogService implements CatalogServiceInterface
-{    
+{
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly CatalogRepository $catalogRepository,
         private readonly WorkflowInterface $catalogStateMachine,
         private readonly EntityManagerInterface $entityManager,
-        
     ) {
     }
 
@@ -32,25 +31,35 @@ final class CatalogService implements CatalogServiceInterface
     {
         $catalog = new Catalog(
             Uuid::uuid4(),
-            $catalogDTO->name,
-            $catalogDTO->fileName
+            $catalogDTO->fileName,
+            $catalogDTO->name
         );
 
         $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_PROCESSING->value);
-
         return new CatalogDTO($catalog->getId(), $catalog->getFileName(), $catalog->getName());
     }
 
-    public function successImport(UuidInterface $id): void
+    public function setCatalogStatusAsSuccess(UuidInterface $id): void
     {
         $catalog = $this->catalogRepository->findOrFail($id);
         $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_SUCCESS->value);
     }
 
-    public function publish(UuidInterface $id): void
+    public function setCatalogStatusAsFailed(UuidInterface $id): void
+    {
+        $catalog = $this->catalogRepository->findOrFail($id);
+        $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_FAILED->value);
+    }
+
+    public function setCatalogStatusAsPublished(UuidInterface $id): void
     {
         $catalog = $this->catalogRepository->findOrFail($id);
         $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_PUBLISHED->value);
+    }
+    public function getCatalogStatus(UuidInterface $id): CatalogState
+    {
+        $catalog = $this->catalogRepository->findOrFail($id);
+        return $catalog->getState();
     }
 
 }
