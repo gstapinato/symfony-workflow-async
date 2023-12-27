@@ -33,6 +33,7 @@
         "symfony/validator": "6.4.*",
         "symfony/workflow": "6.4.*",
         "symfony/yaml": "6.4.*",
+        "thecodingmachine/safe": "^2.5",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
     },
@@ -86,10 +87,12 @@
         }
     },
     "require-dev": {
+        "brianium/paratest": "^6.11",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",
         "symfony/maker-bundle": "^1.52",
-        "symfony/phpunit-bridge": "^7.0"
+        "symfony/phpunit-bridge": "^7.0",
+        "thecodingmachine/phpstan-safe-rule": "^1.2"
     }
 }
