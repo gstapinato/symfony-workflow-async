@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\StateMachine;
 
@@ -16,15 +18,12 @@ use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 
 class StateMachineListener
 {
-
-
-    function __construct(
+    public function __construct(
         private readonly CatalogService $catalogService,
         private readonly LoggerInterface $logger,
         private readonly SerializerInterface $serializer,
         private readonly EntityManagerInterface $entityManager,
         private readonly MessageBusInterface $messageBusInterface,
-
     ) {
     }
 

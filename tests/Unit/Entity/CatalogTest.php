@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 class CatalogTest extends TestCase
 {
-
     public function testSetStateAsStringSuccess(): void
     {
         $catalog = new Catalog(Uuid::uuid4());

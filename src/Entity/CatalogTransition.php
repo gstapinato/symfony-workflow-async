@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entity;
+
 enum CatalogTransition: string
 {
     case TO_PROCESSING  = 'processing';

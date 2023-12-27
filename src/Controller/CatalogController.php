@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -18,17 +20,15 @@ use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-
 #[Route('/api/catalog', name: 'catalog_')]
 #[OA\Tag(name: 'catalog')]
 
 class CatalogController extends AbstractController
 {
-
-    function __construct(
+    public function __construct(
         private LoggerInterface $logger,
-        private CatalogServiceInterface $catalogService)
-    {
+        private CatalogServiceInterface $catalogService
+    ) {
     }
 
     /**
@@ -37,7 +37,8 @@ class CatalogController extends AbstractController
     #[Route('/create', name: 'create', methods: ['POST'])]
     #[OA\RequestBody(
         content: new OA\JsonContent(
-            ref: new Model(type: CatalogDTO::class, groups: ['default']))
+            ref: new Model(type: CatalogDTO::class, groups: ['default'])
+        )
     )]
     #[OA\Response(
         response: Response::HTTP_CREATED,
@@ -72,12 +73,18 @@ class CatalogController extends AbstractController
         description: 'Catalog not found',
         content: new OA\JsonContent(ref: new Model(type: CatalogDTO::class))
     )]
-    
+
     #[Route('/publish/{id}', name: 'publish', methods: ['PUT'], requirements: ['id' => Requirement::UUID_V4])]
     public function publish(string $id): JsonResponse
     {
-        $this->catalogService->publish(Uuid::fromString($id));
+        $this->catalogService->setCatalogStatusAsPublished(Uuid::fromString($id));
         return $this->json(null);
+    }
+
+    #[Route('/status/{id}', name: 'status', methods: ['GET'], requirements: ['id' => Requirement::UUID_V4])]
+    public function status(string $id): JsonResponse
+    {
+        return $this->json($this->catalogService->getCatalogStatus(Uuid::fromString($id))->value);
     }
 
 }

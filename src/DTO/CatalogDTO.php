@@ -11,7 +11,7 @@ class CatalogDTO
     public function __construct(
         public ?string $id,
         #[OA\Property(description: "File name", example:"fileName.txt")]
-        #[Groups(["default"])]        
+        #[Groups(["default"])]
         #[NotBlank(message: "Description value should not be blank")]
         public string $fileName,
         #[OA\Property(description: "Catalog name", example:"A catalog Name")]
