@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Catalog;
-use App\Exception\ServiceException;
+use App\Exception\ServiceHttpException;
 use App\Exception\ValidationException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -25,15 +25,16 @@ class CatalogRepository extends ServiceEntityRepository
 
     /**
      * Summary of findOrFail
-     * @param mixed $id
+     * @param string $id
      * @return \App\Entity\Catalog
+     * @throws ServiceHttpException if catalog not found
      */
-    public function findOrFail($id): Catalog
+    public function findOrFail(string $id): Catalog
     {
         //TODO: Move this to generic Repository
         $catalog = $this->find($id);
         if ($catalog == null) {
-            throw ServiceException::createNotFoundException("Catalog not found");
+            throw ServiceHttpException::createNotFoundException("Catalog not found");
         }
         return $catalog;
     }
