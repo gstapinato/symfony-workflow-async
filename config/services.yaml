@@ -10,6 +10,12 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            #Directroy where files are persisted.
+            #App needs read permissions on the files in the directory.
+            $storagePath: '%env(resolve:APP_STORAGE_PATH)%'
+            #Chunk size used to write on database.
+            $fileBatchSize: '%env(resolve:APP_FILE_BATCH_SIZE)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
