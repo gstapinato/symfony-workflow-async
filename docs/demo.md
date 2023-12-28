@@ -1,17 +1,39 @@
-# Demo App
-Import products from text file on a catalog.
+### Example Use Case
 
-### Sucess case
-Add a catalog
-	State transition: Initiated => Pending
+Simple use to show how to create a catalog and importing its products from CSV on a database.
 
-Start import products asynchronously
-	State transition: Pending => Pending
+### State machine diagram 
+<img src="workflow.png">
 
-When processing is finished, job changes status from Processing => Success
+### Setup
+Execute consume command on php container
+```
+$ make sh
+$ php bin/console messenger:consume async
+```
 
+Open https://localhost/api/doc to browse API documentation
 
-Publish products
-	State transition: Sucess => Published
+### Demo Steps
+
+* Create a catalog and starting to import its products.
+
+	Execute using default values or add a csv product file on storage directory.
 	
-### Failure case
+	API endpoint: /api/catalog/create
+
+* Publish a catalog whose status is success
+
+	API endpoint: /api/catalog/{id}/progress
+
+* To see catalog status
+
+	API endpoint: /api/catalog/{id}/status
+
+
+#### References
+
+Workflow diagram genereated using:
+```
+php bin/console workflow:dump catalog --dump-format=mermaid 
+```

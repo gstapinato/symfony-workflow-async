@@ -1,15 +1,11 @@
-# State machine with batch processing
-Symfony app to show how to integrate a state machine with batch processing using messenger and workflow components.
-
-### Steps
-
-State machine diagram 
-<img src="docs/workflow.png">
+# State machine with batch processing on a Symfony App
+Initial architecture to show how to integrate a state machine with batch processing using messenger and workflow components.
 
 
-API documentation:
-http://localhost/api/doc
-
+## Requirements
+What things you need to install the software and how to install them : 
+* Git
+* Docker
 
 ## Setup
 ```
@@ -20,19 +16,15 @@ make up
 ## Demo app
 See [Demo App](docs/demo.md)
 
+## To stop and remove container run
+```
+make down
+```
 
-### Tests
+### Running Tests
 ```
 bin/phpunit --testdox 
 ```
-
-#### Reference
-Workflow diagram genereated using:
-```
-php bin/console workflow:dump catalog --dump-format=mermaid 
-```
-
-Docker Integration using https://github.com/dunglas/symfony-docker
 
 #### Tags
 * PHP 8.3
