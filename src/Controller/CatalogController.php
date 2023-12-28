@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/api/catalog', name: 'catalog_')]
-#[OA\Tag(name: 'catalog')]
+#[OA\Tag(name: 'Catalog')]
 
 class CatalogController extends AbstractController
 {
@@ -34,12 +34,8 @@ class CatalogController extends AbstractController
     /**
      * Create a new catalog
      */
-    #[Route('/create', name: 'create', methods: ['POST'])]
-    #[OA\RequestBody(
-        content: new OA\JsonContent(
-            ref: new Model(type: CatalogDTO::class, groups: ['default'])
-        )
-    )]
+    #[Route('/create', name: 'create', methods: ['POST'], format: 'json')]
+    #[OA\RequestBody(content: new OA\JsonContent(ref: new Model(type: CatalogDTO::class, groups: ['default'])))]
     #[OA\Response(
         response: Response::HTTP_CREATED,
         description: 'Catalog created',
@@ -53,35 +49,42 @@ class CatalogController extends AbstractController
         );
     }
 
+
     /**
-     * Publish a catalog.
+     * Publish a catalog whose status is success
      */
     #[OA\Parameter(
         name: "id",
-        in:"path",
-        required:true,
+        in: "path",
+        required: true,
         example: "550e8400-e29b-41d4-a716-446655440000",
-        schema: new OA\Schema(type:"string")
-    )]
-    #[OA\Response(
-        response: Response::HTTP_OK,
-        description: 'Catalog published',
-        content: new OA\JsonContent(ref: new Model(type: CatalogDTO::class))
-    )]
-    #[OA\Response(
-        response: Response::HTTP_NOT_FOUND,
-        description: 'Catalog not found',
-        content: new OA\JsonContent(ref: new Model(type: CatalogDTO::class))
+        schema: new OA\Schema(type: "string")
     )]
 
-    #[Route('/publish/{id}', name: 'publish', methods: ['PUT'], requirements: ['id' => Requirement::UUID_V4])]
+    #[OA\Response(response: Response::HTTP_OK, description: 'Catalog published')]
+    #[OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Catalog not found')]
+    #[OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Transition is not valid')]
+
+    #[Route('/publish/{id}', name: 'publish', methods: ['PUT'], requirements: ['id' => Requirement::UUID_V4], format: 'json')]
     public function publish(string $id): JsonResponse
     {
         $this->catalogService->setCatalogStatusAsPublished(Uuid::fromString($id));
         return $this->json(null);
     }
 
-    #[Route('/status/{id}', name: 'status', methods: ['GET'], requirements: ['id' => Requirement::UUID_V4])]
+    /**
+     * Get catalog status
+     */
+    #[OA\Parameter(
+        name: "id",
+        in: "path",
+        required: true,
+        example: "550e8400-e29b-41d4-a716-446655440000",
+        schema: new OA\Schema(type: "string")
+    )]
+    #[OA\Response(response: Response::HTTP_OK, description: 'Get catalog status')]
+    #[OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Catalog not found')]
+    #[Route('/status/{id}', name: 'status', methods: ['GET'], requirements: ['id' => Requirement::UUID_V4], format: 'json')]
     public function status(string $id): JsonResponse
     {
         return $this->json($this->catalogService->getCatalogStatus(Uuid::fromString($id))->value);

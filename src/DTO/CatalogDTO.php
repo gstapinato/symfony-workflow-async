@@ -10,7 +10,7 @@ class CatalogDTO
 {
     public function __construct(
         public ?string $id,
-        #[OA\Property(description: "File name", example:"flipkart_com-ecommerce_sample_ok.txt")]
+        #[OA\Property(description: "File name", example:"flipkart_com-ecommerce_sample_ok.csv")]
         #[Groups(["default"])]
         #[NotBlank(message: "Description value should not be blank")]
         public string $fileName,
