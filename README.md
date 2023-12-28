@@ -26,6 +26,15 @@ make down
 bin/phpunit --testdox 
 ```
 
+### Code Quality
+
+* php-cs-fixer
+```
+tools/php-cs-fixer/vendor/bin/php-cs-fixer fix tests
+tools/php-cs-fixer/vendor/bin/php-cs-fixer fix tests
+```
+
+
 #### Tags
 * PHP 8.3
 * Symfony 6.4
