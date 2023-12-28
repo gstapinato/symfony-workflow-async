@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Exception\ServiceHttpException;
 use Ramsey\Uuid\Uuid;
 use App\DTO\CatalogDTO;
 use App\Entity\Catalog;
@@ -12,9 +13,10 @@ use App\Entity\CatalogTransition;
 use App\Repository\CatalogRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
+use Symfony\Component\Workflow\Exception\NotEnabledTransitionException;
 
 /**
- * Summary of QueueService
+ * Summary of CatalogService
 
  */
 final class CatalogService implements CatalogServiceInterface
@@ -35,31 +37,40 @@ final class CatalogService implements CatalogServiceInterface
             $catalogDTO->name
         );
 
-        $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_PROCESSING->value);
+        $this->setCatalogStatus($catalog, CatalogTransition::TO_PROCESSING);
         return new CatalogDTO($catalog->getId(), $catalog->getFileName(), $catalog->getName());
     }
 
     public function setCatalogStatusAsSuccess(UuidInterface $id): void
     {
         $catalog = $this->catalogRepository->findOrFail($id);
-        $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_SUCCESS->value);
+        $this->setCatalogStatus($catalog, CatalogTransition::TO_SUCCESS);
     }
 
     public function setCatalogStatusAsFailed(UuidInterface $id): void
     {
         $catalog = $this->catalogRepository->findOrFail($id);
-        $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_FAILED->value);
+        $this->setCatalogStatus($catalog, CatalogTransition::TO_FAILED);
     }
 
     public function setCatalogStatusAsPublished(UuidInterface $id): void
     {
         $catalog = $this->catalogRepository->findOrFail($id);
-        $this->catalogStateMachine->apply($catalog, CatalogTransition::TO_PUBLISHED->value);
+        $this->setCatalogStatus($catalog, CatalogTransition::TO_PUBLISHED);
     }
     public function getCatalogStatus(UuidInterface $id): CatalogState
     {
         $catalog = $this->catalogRepository->findOrFail($id);
         return $catalog->getState();
+    }
+
+    private function setCatalogStatus(Catalog $catalog, CatalogTransition $catalogTransition): void
+    {
+        try {
+            $this->catalogStateMachine->apply($catalog, $catalogTransition->value);
+        } catch(NotEnabledTransitionException $exception) {
+            throw ServiceHttpException::createValidationException($exception->getMessage(), $exception);
+        }
     }
 
 }
