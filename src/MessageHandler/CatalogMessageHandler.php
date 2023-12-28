@@ -25,18 +25,17 @@ class CatalogMessageHandler
 
     public function __invoke(CatalogMessage $message)
     {
-        try {
-            $dateTime = new DateTime();
-            $this->logger->info("Starting to import products", (array) $message);
-            $this->productServiceInterface->importProducts($message->getId(), $message->getFileName());
-            $diff = (new DateTime())->getTimestamp() - $dateTime->getTimestamp();
+        $dateTime = new DateTime();
+        $this->logger->info("Starting to import products", (array) $message);
+        $isSuccessful = $this->productServiceInterface->importProducts($message->getId(), $message->getFileName());
+        $diff = (new DateTime())->getTimestamp() - $dateTime->getTimestamp();
+        if ($isSuccessful) {
             $this->catalogServiceInterface->setCatalogStatusAsSuccess($message->getId());
-            $this->logger->info("Import products finished. Time elapsed: $diff seconds");
-        } catch (\RuntimeException $exception) {
-            $this->logger->error("Import products failed.", ['exception' => $exception]);
-
+            $this->logger->info("Import products finished successfully. Time elapsed: $diff seconds");
+        } else {
             $this->catalogServiceInterface->setCatalogStatusAsFailed($message->getId());
-            throw new UnrecoverableMessageHandlingException($exception->getMessage(), $exception->getCode(), $exception);
+            $this->logger->info("Import products failed. Time elapsed: $diff seconds");
+            throw new UnrecoverableMessageHandlingException("Import product failed.");
         }
     }
 

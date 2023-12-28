@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Service;
 
 use App\Entity\Product;
 use App\Service\io\FileLine;
+use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Nonstandard\Uuid;
 use App\Service\Product\ProductBuilder;
@@ -20,8 +21,11 @@ use PHPUnit\Framework\MockObject\Rule\InvokedCount as InvokedCountMatcher;
  */
 class ProductServiceTest extends TestCase
 {
+    private LoggerInterface $logger;
+
     protected function setUp(): void
     {
+        $this->logger = $this->createMock(LoggerInterface::class);
     }
     public function testImportProductsOneBatch(): void
     {
@@ -41,8 +45,8 @@ class ProductServiceTest extends TestCase
         $productWriter->expects(self::once())
             ->method("write");
 
-        $productService = new ProductService($readFileServiceMock, $productBuilder, $productWriter, 20);
-        $productService->importProducts(Uuid::uuid4(), "");
+        $productService = new ProductService($this->logger, $readFileServiceMock, $productBuilder, $productWriter, 20);
+        $this->assertTrue($productService->importProducts(Uuid::uuid4(), ""));
     }
     public function testImportProductsTwoBatch(): void
     {
@@ -60,9 +64,22 @@ class ProductServiceTest extends TestCase
         $productWriter->expects(new InvokedCountMatcher(2))
             ->method("write");
 
-        $productService = new ProductService($readFileServiceMock, $productBuilder, $productWriter, 1);
-        $productService->importProducts(Uuid::uuid4(), "");
+        $productService = new ProductService($this->logger, $readFileServiceMock, $productBuilder, $productWriter, 1);
+        $this->assertTrue($productService->importProducts(Uuid::uuid4(), ""));
     }
 
+    public function testImportProductsWhenFileNotFound(): void
+    {
+        $readFileServiceMock = $this->createMock(ReadFileServiceInterface::class);
+        $readFileServiceMock->method("read")
+            ->willThrowException(new \ErrorException("Error reading file"));
+        $productBuilder = $this->createMock(ProductBuilder::class);
+
+        /**@var  ProductBatchWriter|MockObject */
+        $productWriter = $this->createMock(ProductBatchWriter::class);
+
+        $productService = new ProductService($this->logger, $readFileServiceMock, $productBuilder, $productWriter, 1);
+        $this->assertFalse($productService->importProducts(Uuid::uuid4(), ""));
+    }
 
 }

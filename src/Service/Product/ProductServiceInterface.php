@@ -10,9 +10,8 @@ interface ProductServiceInterface
      * Summary of importProducts
      * @param \Ramsey\Uuid\UuidInterface $id
      * @param string $fileName
-     * @return void
-     * @throws \ErrorException If the file could not be read.
+     * @return void true if success
      */
-    public function importProducts(UuidInterface $id, string $fileName): void;
+    public function importProducts(UuidInterface $id, string $fileName): bool;
 
 }

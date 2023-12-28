@@ -22,6 +22,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class ProductService implements ProductServiceInterface
 {
     public function __construct(
+        private readonly LoggerInterface $logger,
         private readonly ReadFileServiceInterface $fileService,
         private readonly ProductBuilder $productBuilder,
         private readonly ProductBatchWriter $productBatchWriter,
@@ -29,23 +30,29 @@ final class ProductService implements ProductServiceInterface
     ) {
     }
 
-    public function importProducts(UuidInterface $catalogId, string $fileName): void
+    public function importProducts(UuidInterface $catalogId, string $fileName): bool
     {
 
-        $iterator = $this->fileService->read($fileName, true, FileLine::class);
-        $products = [];
+        try {
+            $iterator = $this->fileService->read($fileName, true, FileLine::class);
+            $products = [];
 
-        while ($iterator->valid()) {
-            $products[] = $this->productBuilder->build($iterator->current());
+            while ($iterator->valid()) {
+                $products[] = $this->productBuilder->build($iterator->current());
 
-            if ((count($products) % $this->fileBatchSize) === 0) {
-                $this->productBatchWriter->write($products);
-                $products = [];
+                if ((count($products) % $this->fileBatchSize) === 0) {
+                    $this->productBatchWriter->write($products);
+                    $products = [];
+                }
+                $iterator->next();
             }
-            $iterator->next();
-        }
-        if (count($products) > 0) {
-            $this->productBatchWriter->write($products);
+            if (count($products) > 0) {
+                $this->productBatchWriter->write($products);
+            }
+            return true;
+        } catch (\RuntimeException | \ErrorException $exception) {
+            $this->logger->error("Unexpected import products failed.", ['exception' => $exception]);
+            return false;
         }
     }
 
