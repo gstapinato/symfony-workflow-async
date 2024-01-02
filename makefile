@@ -11,7 +11,7 @@ SYMFONY  = $(PHP) bin/console
 
 # Misc
 .DEFAULT_GOAL = help
-.PHONY        : help build up start down logs sh composer vendor sf cc
+.PHONY        : help build up start down logs sh codeQuality composer vendor sf cc
 
 ## —— 🎵 🐳 The Symfony Docker Makefile 🐳 🎵 ——————————————————————————————————
 help: ## Outputs this help screen
@@ -34,6 +34,11 @@ logs: ## Show live logs
 
 sh: ## Connect to the PHP FPM container
 	@$(PHP_CONT) sh
+
+codeQuality: ## Run code quality tools
+	@$(PHP_CONT) sh -c "tools/codeQuality/vendor/bin/php-cs-fixer fix src"
+	@$(PHP_CONT) sh -c "tools/codeQuality/vendor/bin/php-cs-fixer fix tests"
+	@$(PHP_CONT) sh -c "tools/codeQuality/vendor/bin/phpstan analyse --memory-limit 1G -c phpstan.neon --error-format=table > qa/phpstan_result.txt"
 
 ## —— Composer 🧙 ——————————————————————————————————————————————————————————————
 composer: ## Run composer, pass the parameter "c=" to run a given command, example: make composer c='req symfony/orm-pack'

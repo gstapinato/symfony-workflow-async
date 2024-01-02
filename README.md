@@ -30,10 +30,19 @@ bin/phpunit --testdox
 
 * php-cs-fixer
 ```
-tools/php-cs-fixer/vendor/bin/php-cs-fixer fix tests
-tools/php-cs-fixer/vendor/bin/php-cs-fixer fix tests
+tools/codeQuality/vendor/bin/php-cs-fixer fix src
+tools/codeQuality/vendor/bin/php-cs-fixer fix tests
+```
+* phpstan
+```
+tools/codeQuality/vendor/bin/phpstan analyse --memory-limit 1G -c phpstan.neon --error-format=table > qa/phpstan_result.txt
+
 ```
 
+Or you can run all code quality tools together with
+```
+make codeQuality
+```
 
 #### Tags
 * PHP 8.3
