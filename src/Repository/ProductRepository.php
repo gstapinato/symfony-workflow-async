@@ -23,19 +23,4 @@ class ProductRepository extends BaseRepository
         parent::__construct($registry, Product::class);
     }
 
-    // /**
-    //  * Summary of findOrFail
-    //  * @param string $id
-    //  * @return \App\Entity\Product
-    //  */
-    // public function findOrFail(string $id): Product
-    // {
-    //     //TODO: Move this to generic Repository
-    //     $product = $this->find($id);
-    //     if ($product == null) {
-    //         throw ServiceHttpException::createNotFoundException("Product not found");
-    //     }
-    //     return $product;
-    // }
-
 }

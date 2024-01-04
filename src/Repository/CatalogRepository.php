@@ -24,20 +24,4 @@ class CatalogRepository extends BaseRepository
         parent::__construct($registry, Catalog::class);
     }
 
-    // /**
-    //  * Summary of findOrFail
-    //  * @param string $id
-    //  * @return \App\Entity\Catalog
-    //  * @throws ServiceHttpException if catalog not found
-    //  */
-    // public function findOrFail(string $id): Catalog
-    // {
-    //     //TODO: Move this to generic Repository
-    //     $catalog = $this->find($id);
-    //     if ($catalog == null) {
-    //         throw ServiceHttpException::createNotFoundException("Catalog not found");
-    //     }
-    //     return $catalog;
-    // }
-
 }
