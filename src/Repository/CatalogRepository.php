@@ -21,7 +21,7 @@ class CatalogRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Catalog::class);
+        parent::__construct($registry, Catalog::class, "Catalog");
     }
 
     // /**
