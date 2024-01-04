@@ -74,6 +74,12 @@ class Catalog
         return $this->state->value;
     }
 
+    /**
+     * Summary of setStateAsString
+     * @param string $stateAsString
+     * @return \App\Entity\Catalog
+     * @throws \ValueError::class if state does not exists.
+     */
     public function setStateAsString(string $stateAsString): self
     {
         $this->state = CatalogState::from($stateAsString);
