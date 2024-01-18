@@ -1,12 +1,13 @@
 ### Example Use Case
 
-Simple use to show how to create a catalog and importing its products from CSV on a database.
+Simple use case to show how to create a catalog and importing its products from CSV on a database.
 
 ### State machine diagram 
 <img src="workflow.png">
 
 ### Setup
-Execute consume command on php container
+
+Run consume command on php container
 ```
 $ make sh
 $ php bin/console messenger:consume async
