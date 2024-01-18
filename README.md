@@ -16,7 +16,7 @@ make up
 ## Demo app
 See [Demo App](docs/demo.md)
 
-## To stop and remove container run
+## To stop and remove containers run
 ```
 make down
 ```
