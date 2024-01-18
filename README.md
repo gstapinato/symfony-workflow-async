@@ -14,7 +14,7 @@ make up
 ```
 
 ## Demo app
-See [Demo App](docs/demo.md)
+When the setup is finished, you can run a simple use case. See [Demo App](docs/demo.md)
 
 ## To stop and remove containers run
 ```
